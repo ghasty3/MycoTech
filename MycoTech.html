@@ -1,0 +1,2184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jardín de Hongos - Versión Mejorada</title>
+    <style>
+        /* --- Reset y fuente global --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        /* --- Fondo general y estilo del body --- */
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c); /* Fondo degradado */
+            color: #f0f0f0;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* --- Contenedor principal --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* --- Encabezado del juego --- */
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+            position: relative;
+        }
+
+        /* --- Título principal --- */
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            color: #ffcc00;
+            text-shadow: 0 0 10px rgba(255, 204, 0, 0.7), 2px 2px 4px rgba(0, 0, 0, 0.8);
+            letter-spacing: 2px;
+        }
+
+        /* --- Pestañas de navegación (Jardín, Caldero, Tienda) --- */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            background: rgba(139, 69, 19, 0.7);
+            border-radius: 50px;
+            padding: 5px;
+            max-width: 600px;
+            margin: 0 auto 30px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            text-align: center;
+            flex: 1;
+            font-size: 0.9rem;
+        }
+
+        .tab.active {
+            background: #ffcc00;
+            color: #000;
+            box-shadow: 0 0 15px rgba(255, 204, 0, 0.7);
+        }
+
+        /* --- Información del juego (monedas, esporas, tiempo) --- */
+        .game-info {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .info-box {
+            background: rgba(139, 69, 19, 0.7);
+            padding: 12px 20px;
+            border-radius: 10px;
+            min-width: 180px;
+            text-align: center;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .info-box span {
+            font-weight: bold;
+            color: #ffcc00;
+        }
+
+        /* --- Sección principal con jardín y tienda --- */
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        /* --- Sección del jardín --- */
+        .garden-section {
+            flex: 1;
+            min-width: 300px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 20px;
+            padding: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #ffcc00;
+            font-size: 1.6rem;
+        }
+
+        /* --- Grid de macetas del jardín --- */
+        .garden {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        /* --- Maceta individual --- */
+        .pot {
+            position: relative;
+            height: 220px;
+            background: rgba(139, 69, 19, 0.8);
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .pot:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+        }
+
+        /* --- Parte superior de la maceta --- */
+        .pot-top {
+            width: 100%;
+            height: 18px;
+            background: rgba(210, 180, 140, 0.9);
+            border-radius: 5px 5px 0 0;
+        }
+
+        /* --- Tierra de la maceta --- */
+        .soil {
+            width: 100%;
+            height: 25px;
+            background: #5d4037;
+            position: relative;
+        }
+
+        /* --- Seta visual en la maceta --- */
+        .mushroom {
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: all 0.5s ease;
+            z-index: 2;
+        }
+
+        /* --- Tallo de la seta --- */
+        .stem {
+            background: #f5f5f5;
+            width: 12px;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1;
+        }
+        
+        .cap {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+            border-radius: 50% 50% 0 0;
+        }
+        
+        .shop-section {
+            flex: 1;
+            min-width: 300px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 20px;
+            padding: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+        }
+        
+        .daily-customer-container {
+            background: rgba(139, 69, 19, 0.7);
+            border-radius: 15px;
+            padding: 15px;
+            margin-top: 15px;
+            margin-bottom: 30px; /* Espacio para el botón de vender */
+            position: relative;
+            overflow: hidden;
+            min-height: 240px; /* Más alto para mostrar wishlist completa */
+            height: auto;
+        }
+        
+        .daily-customer {
+            text-align: center;
+            transition: transform 0.5s ease;
+        }
+        
+        .customer-icon {
+            font-size: 3.5rem;
+            margin-bottom: 8px;
+            animation: float 3s infinite ease-in-out;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+            100% { transform: translateY(0); }
+        }
+        
+        .wishlist {
+            margin-top: 10px;
+            font-size: 1rem;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 8px;
+            border-radius: 8px;
+            min-height: 80px; /* Asegura espacio para los deseos */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .wishlist-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            font-size: 0.9rem;
+        }
+        
+        .seed-selector {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 15px;
+            padding: 15px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .seeds {
+            display: flex;
+            justify-content: space-around;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .seed {
+            background: rgba(139, 69, 19, 0.8);
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 90px;
+            font-size: 0.9rem;
+        }
+        
+        .seed:hover {
+            background: rgba(160, 82, 45, 0.9);
+            transform: translateY(-3px);
+        }
+        
+        .seed-icon {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+        
+        .inventory {
+            /* --- Inventario del jugador --- */
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 15px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        /* --- Grid de items del inventario --- */
+        .inventory-items {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        /* --- Item individual del inventario --- */
+        .inventory-item {
+            background: rgba(139, 69, 19, 0.8);
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+            width: 90px;
+            position: relative;
+            font-size: 0.9rem;
+        }
+
+        /* --- Cantidad de cada item --- */
+        .item-count {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #ffcc00;
+        }
+
+        /* --- Información de la fase de la seta --- */
+        .phase-info {
+            position: absolute;
+            bottom: 5px;
+            left: 5px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 3px 6px;
+            border-radius: 8px;
+            font-size: 0.7rem;
+        }
+        
+        .messages {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 12px 25px;
+            border-radius: 10px;
+            z-index: 100;
+            display: none;
+            max-width: 90%;
+            text-align: center;
+        }
+        
+        /* Caldero Mágico */
+        .cauldron-section {
+            display: none;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+            margin-top: 20px;
+        }
+        
+        .cauldron-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            justify-content: center;
+            align-items: center;
+            margin-top: 15px;
+        }
+        
+        .cauldron {
+            position: relative;
+            width: 250px;
+            height: 250px;
+            background: rgba(50, 50, 50, 0.7);
+            border-radius: 50% 50% 40% 40%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            box-shadow: inset 0 -15px 25px rgba(0, 0, 0, 0.7), 0 0 15px rgba(139, 0, 139, 0.5);
+            border: 4px solid #5a2a5a;
+        }
+        
+        .cauldron-liquid {
+            position: absolute;
+            bottom: 15px;
+            width: 80%;
+            height: 70%;
+            background: linear-gradient(to top, #4b0082, #8a2be2);
+            border-radius: 50% 50% 30% 30%;
+            opacity: 0.7;
+            box-shadow: 0 0 15px rgba(138, 43, 226, 0.5);
+            transition: all 1s ease;
+        }
+        
+        .cauldron-bubbles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            bottom: 15px;
+        }
+        
+        .bubble {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            animation: bubbleUp 3s infinite;
+        }
+        
+        @keyframes bubbleUp {
+            0% { transform: translateY(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 0.8; }
+            100% { transform: translateY(-80px); opacity: 0; }
+        }
+        
+        .ingredients {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+        
+        .ingredient-slot {
+            width: 70px;
+            height: 70px;
+            background: rgba(139, 69, 19, 0.6);
+            border: 2px dashed #ffcc00;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .ingredient-slot.active {
+            background: rgba(139, 69, 19, 0.9);
+            border: 2px solid #ffcc00;
+            box-shadow: 0 0 12px rgba(255, 204, 0, 0.7);
+        }
+        
+        .mix-button {
+            background: #ffcc00;
+            color: #000;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 40px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 15px auto;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .mix-button:hover {
+            background: #ffdd33;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+        }
+        
+        .mix-button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .crafting-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 25px;
+        }
+        
+        .crafted-item {
+            background: rgba(139, 69, 19, 0.8);
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+            width: 110px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            font-size: 0.9rem;
+        }
+        
+        .crafted-icon {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+        }
+        
+        .crafted-name {
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+        }
+        
+        .crafted-count {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #ffcc00;
+        }
+        
+        .inventory-selector {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 15px;
+            padding: 15px;
+            margin-top: 15px;
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 300;
+            width: 90%;
+            max-width: 450px;
+        }
+        
+        .inventory-selector-title {
+            text-align: center;
+            margin-bottom: 12px;
+            color: #ffcc00;
+            font-size: 1.2rem;
+        }
+        
+        .inventory-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin: 12px 0;
+        }
+        
+        .inventory-option {
+            background: rgba(139, 69, 19, 0.8);
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 90px;
+            font-size: 0.9rem;
+        }
+        
+        .inventory-option:hover {
+            background: rgba(160, 82, 45, 0.9);
+            transform: translateY(-3px);
+        }
+        
+        .preparation-timer {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 8px 15px;
+            border-radius: 15px;
+            z-index: 10;
+            font-size: 1.1rem;
+            color: #ffcc00;
+            display: none;
+        }
+        
+        .preparation-progress {
+            width: 100%;
+            height: 8px;
+            background: #333;
+            border-radius: 4px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        
+        .preparation-progress-bar {
+            height: 100%;
+            background: #ffcc00;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        /* Tienda */
+        .shop-section-tab {
+            display: none;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+            margin-top: 20px;
+        }
+        
+        .shop-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .shop-item {
+            background: rgba(139, 69, 19, 0.7);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .shop-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+        }
+        
+        .shop-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+        
+        .shop-item-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #ffcc00;
+        }
+        
+        .shop-item-description {
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            min-height: 60px;
+        }
+        
+        .shop-item-level {
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        .shop-item-price {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: #ffcc00;
+        }
+        
+        .buy-button {
+            background: #ffcc00;
+            color: #000;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 0 auto;
+        }
+        
+        .buy-button:hover {
+            background: #ffdd33;
+            transform: scale(1.05);
+        }
+        
+        .buy-button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .cat-garden {
+            position: absolute;
+            font-size: 2rem;
+            z-index: 5;
+            animation: catWalk 10s infinite linear;
+        }
+        
+        @keyframes catWalk {
+            0% { transform: translateX(-50px) translateY(0); }
+            25% { transform: translateX(50px) translateY(-10px); }
+            50% { transform: translateX(150px) translateY(0); }
+            75% { transform: translateX(50px) translateY(10px); }
+            100% { transform: translateX(-50px) translateY(0); }
+        }
+        
+        .version-info {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #ffcc00;
+            padding: 8px;
+            border-radius: 5px;
+            font-size: 0.85rem;
+            z-index: 500;
+        }
+        
+        .watering-can {
+            position: absolute;
+            font-size: 1.5rem;
+            z-index: 5;
+            animation: watering 1s forwards;
+        }
+        
+        @keyframes watering {
+            0% { transform: translateY(0) rotate(0); opacity: 1; }
+            100% { transform: translateY(-50px) rotate(30deg); opacity: 0; }
+        }
+        
+        @media (max-width: 768px) {
+            .garden {
+                grid-template-columns: 1fr;
+            }
+            
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .cauldron-container {
+                flex-direction: column;
+            }
+            
+            .tabs .tab {
+                padding: 8px 15px;
+                font-size: 0.8rem;
+            }
+        }
+        
+        /* --- Menú debug discreto --- */
+        #debugMenu {
+        position: fixed;
+        bottom: 10px;
+        right: 10px;
+        background: rgba(0, 0, 0, 0.7);
+        padding: 10px;
+        border-radius: 5px;
+        color: #fff;
+        font-size: 12px;
+        cursor: pointer;
+        z-index: 1000;
+    }
+
+    #debugMenu button {
+        margin: 2px;
+        padding: 3px 8px;
+        background: #333;
+        border: 1px solid #666;
+        color: #fff;
+        border-radius: 3px;
+        cursor: pointer;
+    }
+
+    #debugMenu button:hover {
+        background: #444;
+    }
+}
+</style>
+</head>
+<body>
+    <div class="version-info">Versión Mejorada 3.0</div>
+    
+    <div class="container">
+        <header>
+            <h1>Jardín de Hongos</h1>
+            <p>Gestiona tu jardín, crea pociones y compra mejoras en la tienda</p>
+            
+            <div class="tabs">
+                <div class="tab active" id="gardenTab">Jardín</div>
+                <div class="tab" id="cauldronTab">Caldero</div>
+                <div class="tab" id="shopTab">Tienda</div>
+            </div>
+            
+            <div class="game-info">
+                <div class="info-box">
+                    Esporas: <span id="spores">10</span>
+                </div>
+                <div class="info-box">
+                    Tiempo: <span id="time">Día 1</span>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Sección del Jardín -->
+        <div id="gardenContent">
+            <div class="main-content">
+                <div class="garden-section">
+                    <h2 class="section-title">Tu Jardín</h2>
+                    <div class="garden">
+                        <div class="pot" id="pot1">
+                            <div class="pot-top"></div>
+                            <div class="soil"></div>
+                        </div>
+                        <div class="pot" id="pot2">
+                            <div class="pot-top"></div>
+                            <div class="soil"></div>
+                        </div>
+                        <div class="pot" id="pot3">
+                            <div class="pot-top"></div>
+                            <div class="soil"></div>
+                        </div>
+                        <div class="pot" id="pot4">
+                            <div class="pot-top"></div>
+                            <div class="soil"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="seed-selector" id="seedSelector">
+                        <h3>Selecciona un tipo de seta</h3>
+                        <div class="seeds">
+                            <div class="seed" data-type="red">
+                                <div class="seed-icon">🍄</div>
+                                <div>Seta Roja</div>
+                                <small>Costo: Gratis</small>
+                                <div class="info">Crecimiento: Rápido</div>
+                            </div>
+                            <div class="seed" data-type="blue">
+                                <div class="seed-icon">🍄</div>
+                                <div>Seta Azul</div>
+                                <small>Costo: Gratis</small>
+                                <div class="info">Crecimiento: Medio</div>
+                            </div>
+                            <div class="seed" data-type="purple">
+                                <div class="seed-icon">🍄</div>
+                                <div>Seta Púrpura</div>
+                                <small>Costo: Gratis</small>
+                                <div class="info">Crecimiento: Lento</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="shop-section">
+                    <!-- Sección de cliente del día, lista de deseos y botón de vender eliminados -->
+                    <div class="inventory">
+                        <h3>Tu Inventario</h3>
+                        <div class="inventory-items" style="flex-wrap: wrap; gap: 18px; justify-content: flex-start;">
+                            <div class="inventory-item">
+                                <div style="font-size:2.2rem;text-align:center;">🍄</div>
+                                <div class="item-count" id="red-count">0</div>
+                                <div style="text-align:center;margin-top:4px;">Roja</div>
+                            </div>
+                            <div class="inventory-item">
+                                <div style="font-size:2.2rem;text-align:center;">🍄</div>
+                                <div class="item-count" id="blue-count">0</div>
+                                <div style="text-align:center;margin-top:4px;">Azul</div>
+                            </div>
+                            <div class="inventory-item">
+                                <div style="font-size:2.2rem;text-align:center;">🍄</div>
+                                <div class="item-count" id="purple-count">0</div>
+                                <div style="text-align:center;margin-top:4px;">Púrpura</div>
+                            </div>
+                            <div class="inventory-item">
+                                <div style="font-size:2.2rem;text-align:center;">✨</div>
+                                <div class="item-count" id="spores-count">10</div>
+                                <div style="text-align:center;margin-top:4px;">Esporas</div>
+                            </div>
+                            <div class="inventory-item">
+                                <div style="font-size:2.2rem;text-align:center;">🪨</div>
+                                <div class="item-count" id="copper-count">0</div>
+                                <div style="text-align:center;margin-top:4px;">Cobre</div>
+                            </div>
+                            <div class="inventory-item">
+                                <div style="font-size:2.2rem;text-align:center;">⛓️</div>
+                                <div class="item-count" id="iron-count">0</div>
+                                <div style="text-align:center;margin-top:4px;">Hierro</div>
+                            </div>
+                            <div class="inventory-item">
+                                <div style="font-size:2.2rem;text-align:center;">💎</div>
+                                <div class="item-count" id="amethyst-count">0</div>
+                                <div style="text-align:center;margin-top:4px;">Amatista</div>
+                            </div>
+                            <div class="inventory-item">
+    <div style="font-size:2.2rem;text-align:center;">🧪</div>
+    <div class="item-count" id="combustible-count">0</div>
+    <div style="text-align:center;margin-top:4px;font-size:0.85rem;">Combustible</div>
+                            </div>
+                            <div class="inventory-item">
+    <div style="font-size:2.2rem;text-align:center;">🧱</div>
+    <div class="item-count" id="bioconcreto-count">0</div>
+    <div style="text-align:center;margin-top:4px;font-size:0.85rem;">Bioconcreto</div>
+                            </div>
+                            <div class="inventory-item">
+                                <div style="font-size:2.2rem;text-align:center;">💎</div>
+                                <div class="item-count" id="potion-count">0</div>
+                                <div style="text-align:center;margin-top:4px;">Creaciones</div>
+                            </div>
+                            <!-- Espacios vacíos para futuras actualizaciones -->
+                            <div class="inventory-item" style="background:rgba(139,69,19,0.3);border:2px dashed #ffcc00;height:90px;display:flex;flex-direction:column;justify-content:center;align-items:center;"></div>
+                            <div class="inventory-item" style="background:rgba(139,69,19,0.3);border:2px dashed #ffcc00;height:90px;display:flex;flex-direction:column;justify-content:center;align-items:center;"></div>
+                            <div class="inventory-item" style="background:rgba(139,69,19,0.3);border:2px dashed #ffcc00;height:90px;display:flex;flex-direction:column;justify-content:center;align-items:center;"></div>
+                            <div class="inventory-item" style="background:rgba(139,69,19,0.3);border:2px dashed #ffcc00;height:90px;display:flex;flex-direction:column;justify-content:center;align-items:center;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sección del Caldero Mágico -->
+        <div class="cauldron-section" id="cauldronContent">
+            <h2 class="section-title">Caldero Mágico</h2>
+            <p class="section-subtitle">Combina setas para obtener recursos</p>
+            
+            <div class="preparation-timer" id="preparationTimer">
+                Procesando recursos... <span id="timerValue">0s</span>
+                <div class="preparation-progress">
+                    <div class="preparation-progress-bar" id="preparationProgress"></div>
+                </div>
+            </div>
+            
+            <div class="cauldron-container">
+                <div class="cauldron">
+                    <div class="cauldron-liquid" id="cauldronLiquid"></div>
+                    <div class="cauldron-bubbles" id="cauldronBubbles"></div>
+                </div>
+                
+                <div class="ingredients-container">
+                    <div class="ingredients">
+                        <div class="ingredient-slot" id="slot1" data-slot="1">+</div>
+                        <div class="ingredient-slot" id="slot2" data-slot="2">+</div>
+                    </div>
+                    <button class="mix-button" id="mixButton" disabled>Mezclar Ingredientes</button>
+                    <div id="cauldronQueueList" style="margin-top:15px;"></div>
+                    <div class="crafting-result" id="craftingResult" style="display:none; text-align:center; margin-top:15px;">
+                        <h3>¡Has obtenido!</h3>
+                        <div id="resultItem" style="font-size: 2.5rem; margin: 10px 0;"></div>
+                        <div id="resultName" style="font-size: 1.1rem; font-weight:bold;"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <h3 class="section-title" style="margin-top: 30px;">Tus Recursos</h3>
+            <div class="crafting-items">
+                <div class="crafted-item">
+                    <div class="crafted-icon">🪨</div>
+                    <div class="crafted-name">Mena de Cobre</div>
+                    <div class="crafted-count" id="potion-red">0</div>
+                </div>
+                <div class="crafted-item">
+                    <div class="crafted-icon">⛓️</div>
+                    <div class="crafted-name">Mena de Hierro</div>
+                    <div class="crafted-count" id="potion-blue">0</div>
+                </div>
+                <div class="crafted-item">
+                    <div class="crafted-icon">💎</div>
+                    <div class="crafted-name">Amatista</div>
+                    <div class="crafted-count" id="potion-purple">0</div>
+                </div>
+                <div class="crafted-item">
+                    <div class="crafted-icon">🧪</div>
+                    <div class="crafted-name">Combustible Biológico</div>
+                    <div class="crafted-count" id="potion-combustible">0</div>
+                </div>
+                <div class="crafted-item">
+                    <div class="crafted-icon">🧱</div>
+                    <div class="crafted-name">Bioconcreto</div>
+                    <div class="crafted-count" id="potion-bioconcreto">0</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sección de Tienda -->
+        <div class="shop-section-tab" id="shopContent">
+            <h2 class="section-title">Tienda de Mejoras</h2>
+            <p class="section-subtitle">Compra objetos para mejorar tu jardín</p>
+            
+            <div class="shop-items">
+                <!-- Regadera -->
+                <div class="shop-item">
+                    <div class="shop-icon">🚿</div>
+                    <div class="shop-item-title">Regadera Mágica</div>
+                    <div class="shop-item-description">
+                        Acelera el crecimiento de tus setas. Nivel 1: 1 seta al día. Nivel 2: 2 setas. Nivel 3: 2 setas automáticas.
+                    </div>
+                    <div class="shop-item-level">Nivel actual: <span id="watering-level">0</span></div>
+                    <div class="shop-item-price" id="watering-price">Gratis</div>
+                    <button class="buy-button" id="buy-watering">Comprar Mejora</button>
+                </div>
+                
+                <!-- Fertilizante -->
+                <div class="shop-item">
+                    <div class="shop-icon">🧪</div>
+                    <div class="shop-item-title">Fertilizante Especial</div>
+                    <div class="shop-item-description">
+                        Acelera el crecimiento de todas las setas. Nivel 1: 10% más rápido. Nivel 2: 15%. Nivel 3: 20%.
+                    </div>
+                    <div class="shop-item-level">Nivel actual: <span id="fertilizer-level">0</span></div>
+                    <div class="shop-item-price" id="fertilizer-price">Gratis</div>
+                    <button class="buy-button" id="buy-fertilizer">Comprar Mejora</button>
+                </div>
+                
+                <!-- Gato Jardinero -->
+                <div class="shop-item">
+                    <div class="shop-icon">🐱</div>
+                    <div class="shop-item-title">Gato Jardinero</div>
+                    <div class="shop-item-description">
+                        Un gato que trabaja para ti. Nivel 1: Acción cada 30s. Nivel 2: 20s. Nivel 3: 8s.
+                    </div>
+                    <div class="shop-item-level">Nivel actual: <span id="cat-level">0</span></div>
+                    <div class="shop-item-price" id="cat-price">Gratis</div>
+                    <button class="buy-button" id="buy-cat">Comprar Mejora</button>
+                </div>
+                
+                <!-- Rana Alquimista -->
+                <div class="shop-item">
+                    <div class="shop-icon">🐸</div>
+                    <div class="shop-item-title">Rana Alquimista</div>
+                    <div class="shop-item-description">
+                        Permite añadir recetas al caldero en cola (máximo 5).
+                    </div>
+                    <div class="shop-item-price" id="frog-price">Gratis</div>
+                    <button class="buy-button" id="buy-frog">Comprar Mejora</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="messages" id="messageBox"></div>
+        
+        <div class="inventory-selector" id="inventorySelector">
+            <h3 class="inventory-selector-title">Selecciona un ingrediente</h3>
+            <div class="inventory-options">
+                <div class="inventory-option" data-type="red">
+                    <div>🍄 Roja</div>
+                    <div class="item-count" id="selector-red">0</div>
+                </div>
+                <div class="inventory-option" data-type="blue">
+                    <div>🍄 Azul</div>
+                    <div class="item-count" id="selector-blue">0</div>
+                </div>
+                <div class="inventory-option" data-type="purple">
+                    <div>🍄 Púrpura</div>
+                    <div class="item-count" id="selector-purple">0</div>
+                </div>
+            </div>
+            <button class="buy-button" id="closeSelector" style="margin-top: 15px; background: #ff6b6b;">Cancelar</button>
+        </div>
+        
+        <div id="debugMenu">
+    <span style='opacity:0.7;'>Debug</span>
+</div>
+    </div>
+    
+    <script>
+        // Estado del juego
+        const gameState = {
+            spores: 10,
+            day: 1,
+            selectedPot: null,
+            inventory: {
+                red: 0,
+                blue: 0,
+                purple: 0,
+                potion: 0
+            },
+            craftedItems: {
+                red: 0,
+                blue: 0,
+                purple: 0,
+                combustible: 0,
+                bioconcreto: 0,
+                iron: 0,
+                copper: 0,
+                amethyst: 0
+            },
+            garden: {
+                pot1: null,
+                pot2: null,
+                pot3: null,
+                pot4: null
+            },
+            currentSlot: null,
+            ingredients: {
+                slot1: null,
+                slot2: null
+            },
+            growthIntervals: {},
+            isPreparing: false,
+            upgrades: {
+                wateringCan: 0,
+                fertilizer: 0,
+                cat: 0
+            },
+            wateringUses: 0,
+            catInterval: null,
+            alchemistFrog: false,
+            cauldronQueue: [], // Queue for recipes, max 5
+        };
+        
+        // Velocidades de crecimiento (ms por fase) - reducidas a la mitad
+        const growthSpeeds = {
+            red: 400,    // Más rápido
+            blue: 600,   // Medio
+            purple: 900  // Más lento
+        };
+        
+        // Precios de las setas
+        // Las semillas ahora son gratis
+        
+        // Precios de venta por cliente
+        // Precios de venta eliminados
+        
+        // Tiempos de preparación para pociones (segundos)
+        const preparationTimes = {
+            red: 30,      // Poción roja (rápida)
+            blue: 40,     // Poción azul (media)
+            purple: 50,   // Poción púrpura (lenta)
+            combustible: 45,  // Combustible
+            bioconcreto: 60     // Bioconcreto
+        };
+        
+        // Combinaciones para el caldero
+        const combinations = {
+            "red-red": { item: "copper", name: "Mena de Cobre", emoji: "🪨" },
+            "blue-blue": { item: "iron", name: "Mena de Hierro", emoji: "⛓️" },
+            "purple-purple": { item: "amethyst", name: "Amatista", emoji: "💎" },
+            "red-blue": { item: "combustible", name: "Combustible", emoji: "🧪" },
+            "blue-purple": { item: "bioconcreto", name: "Bioconcreto", emoji: "🧱" },
+            "red-purple": { item: "combustible", name: "Combustible", emoji: "🧪" },
+            "blue-red": { item: "combustible", name: "Combustible", emoji: "🧪" },
+            "purple-blue": { item: "bioconcreto", name: "Bioconcreto", emoji: "🧱" },
+            "purple-red": { item: "combustible", name: "Combustible Biológico", emoji: "🧪" }
+        };
+        
+        // Precios de mejoras
+        // Precios de mejoras por recursos
+        const upgradePrices = {
+            wateringCan: [
+                { iron: 1, amethyst: 0 },
+                { iron: 2, amethyst: 0 },
+                { iron: 4, amethyst: 0 }
+            ],
+            fertilizer: [
+                { combustible: 1, amethyst: 1 },
+                { combustible: 2, amethyst: 1 },
+                { combustible: 3, amethyst: 2 }
+            ],
+            cat: [
+                { copper: 2, iron: 1, amethyst: 1 },
+                { copper: 3, iron: 2, amethyst: 1 },
+                { copper: 4, iron: 3, amethyst: 2 }
+            ],
+            frog: [
+                { bioconcreto: 2, copper: 1, amethyst: 1 },
+                { bioconcreto: 3, copper: 2, amethyst: 1 },
+                { bioconcreto: 4, copper: 3, amethyst: 2 }
+            ]
+        };
+        
+        // Referencias DOM
+        const sporesEl = document.getElementById('spores');
+        const timeEl = document.getElementById('time');
+        const seedSelector = document.getElementById('seedSelector');
+        const messageBox = document.getElementById('messageBox');
+        const redCountEl = document.getElementById('red-count');
+        const blueCountEl = document.getElementById('blue-count');
+        const purpleCountEl = document.getElementById('purple-count');
+        const sporesCountEl = document.getElementById('spores-count');
+        const potionCountEl = document.getElementById('potion-count');
+        const gardenTab = document.getElementById('gardenTab');
+        const cauldronTab = document.getElementById('cauldronTab');
+        const shopTab = document.getElementById('shopTab');
+        const gardenContent = document.getElementById('gardenContent');
+        const cauldronContent = document.getElementById('cauldronContent');
+        const shopContent = document.getElementById('shopContent');
+        const inventorySelector = document.getElementById('inventorySelector');
+        const mixButton = document.getElementById('mixButton');
+        const slot1 = document.getElementById('slot1');
+        const slot2 = document.getElementById('slot2');
+        const craftingResult = document.getElementById('craftingResult');
+        const resultItem = document.getElementById('resultItem');
+        const resultName = document.getElementById('resultName');
+        const preparationTimer = document.getElementById('preparationTimer');
+        const timerValue = document.getElementById('timerValue');
+        const preparationProgress = document.getElementById('preparationProgress');
+        // customerIcon eliminado
+        // customerName eliminado
+        // wishRed eliminado
+        // wishPotionRed eliminado
+        // wishRainbow eliminado
+        // sellButton eliminado
+        
+        // Elementos de pociones
+        const potionRedEl = document.getElementById('potion-red');
+        const potionBlueEl = document.getElementById('potion-blue');
+        const potionPurpleEl = document.getElementById('potion-purple');
+        const potionCombustibleEl = document.getElementById('potion-combustible');
+        const potionBioconcretoEl = document.getElementById('potion-bioconcreto');
+        
+        // Elementos de la tienda
+        const wateringLevelEl = document.getElementById('watering-level');
+        const wateringPriceEl = document.getElementById('watering-price');
+        const buyWateringBtn = document.getElementById('buy-watering');
+        const fertilizerLevelEl = document.getElementById('fertilizer-level');
+        const fertilizerPriceEl = document.getElementById('fertilizer-price');
+        const buyFertilizerBtn = document.getElementById('buy-fertilizer');
+        const catLevelEl = document.getElementById('cat-level');
+        const catPriceEl = document.getElementById('cat-price');
+        const buyCatBtn = document.getElementById('buy-cat');
+        const frogPriceEl = document.getElementById('frog-price');
+        const buyFrogBtn = document.getElementById('buy-frog');
+        
+        // Inicialización del juego
+        function initGame() {
+            updateUI();
+            setupEventListeners();
+            startDayCycle();
+            startCatAssistant();
+        }
+        
+        // Generar cliente diario y su lista de deseos
+        function generateDailyCustomer() {
+        // Función de cliente eliminada
+        } // <-- Añadido cierre de función faltante
+        
+        // Actualizar la interfaz de usuario
+        function updateUI() {
+            sporesEl.textContent = gameState.spores;
+            timeEl.textContent = `Día ${gameState.day}`;
+            redCountEl.textContent = gameState.inventory.red;
+            blueCountEl.textContent = gameState.inventory.blue;
+            purpleCountEl.textContent = gameState.inventory.purple;
+            sporesCountEl.textContent = gameState.spores;
+            potionCountEl.textContent = Object.values(gameState.craftedItems).reduce((a, b) => a + b, 0);
+            // Actualizar selector de inventario
+            document.getElementById('selector-red').textContent = gameState.inventory.red;
+            document.getElementById('selector-blue').textContent = gameState.inventory.blue;
+            document.getElementById('selector-purple').textContent = gameState.inventory.purple;
+            // Actualizar pociones
+            potionRedEl.textContent = gameState.craftedItems.red;
+            potionBlueEl.textContent = gameState.craftedItems.blue;
+            potionPurpleEl.textContent = gameState.craftedItems.purple;
+            potionCombustibleEl.textContent = gameState.craftedItems.combustible;
+            potionBioconcretoEl.textContent = gameState.craftedItems.bioconcreto;
+            
+            // Actualizar contadores de recursos en el inventario
+            const copperCountEl = document.getElementById('copper-count');
+            const ironCountEl = document.getElementById('iron-count');
+            const amethystCountEl = document.getElementById('amethyst-count');
+            const combustibleCountEl = document.getElementById('combustible-count');
+            const bioconcretoCountEl = document.getElementById('bioconcreto-count');
+            
+            if (copperCountEl) copperCountEl.textContent = gameState.craftedItems.copper || 0;
+            if (ironCountEl) ironCountEl.textContent = gameState.craftedItems.iron || 0;
+            if (amethystCountEl) amethystCountEl.textContent = gameState.craftedItems.amethyst || 0;
+            if (combustibleCountEl) combustibleCountEl.textContent = gameState.craftedItems.combustible || 0;
+            if (bioconcretoCountEl) bioconcretoCountEl.textContent = gameState.craftedItems.bioconcreto || 0;
+            // Cliente y deseos eliminados
+        // Nueva función para mostrar los deseos reales del cliente
+        // Función de deseos del cliente eliminada
+            
+            // Actualizar macetas
+            for (const potId in gameState.garden) {
+                const pot = document.getElementById(potId);
+                const mushroom = gameState.garden[potId];
+                
+                // Limpiar cualquier seta existente
+                const existingMushroom = pot.querySelector('.mushroom');
+                if (existingMushroom) {
+                    pot.removeChild(existingMushroom);
+                }
+                
+                if (mushroom) {
+                    // Crear elemento de seta
+                    const mushroomEl = document.createElement('div');
+                    mushroomEl.className = 'mushroom';
+                    
+                    // Crear tallo
+                    const stemEl = document.createElement('div');
+                    stemEl.className = 'stem';
+                    stemEl.style.height = `${mushroom.height}px`;
+                    stemEl.style.backgroundColor = mushroom.stemColor;
+                    
+                    // Crear sombrero
+                    const capEl = document.createElement('div');
+                    capEl.className = 'cap';
+                    capEl.style.width = `${mushroom.capSize}px`;
+                    capEl.style.height = `${mushroom.capSize/1.5}px`;
+                    capEl.style.backgroundColor = mushroom.capColor;
+                    capEl.style.bottom = `${mushroom.height}px`;
+                    
+                    // Crear etiqueta de fase
+                    const phaseEl = document.createElement('div');
+                    phaseEl.className = 'phase-info';
+                    phaseEl.textContent = `Fase ${mushroom.phase}`;
+                    
+                    // Agregar elementos a la seta
+                    mushroomEl.appendChild(stemEl);
+                    mushroomEl.appendChild(capEl);
+                    mushroomEl.appendChild(phaseEl);
+                    
+                    // Agregar seta a la maceta
+                    pot.appendChild(mushroomEl);
+                }
+            }
+            
+            // Actualizar slots del caldero
+            updateCauldronSlots();
+            
+            // Actualizar tienda
+            updateShopUI();
+        } // <-- Añadido cierre de función updateUI
+
+        // Actualizar los slots del caldero
+        function updateCauldronSlots() {
+            // Slot 1
+            if (gameState.ingredients.slot1) {
+                slot1.innerHTML = gameState.ingredients.slot1 === 'red' ? '🍄' : 
+                                 gameState.ingredients.slot1 === 'blue' ? '🍄' : '🍄';
+                slot1.style.fontSize = '2.2rem';
+                slot1.style.backgroundColor = gameState.ingredients.slot1 === 'red' ? 'rgba(255, 100, 100, 0.7)' :
+                                             gameState.ingredients.slot1 === 'blue' ? 'rgba(100, 100, 255, 0.7)' : 
+                                             'rgba(180, 100, 255, 0.7)';
+            } else {
+                slot1.innerHTML = '+';
+                slot1.style.fontSize = '1.8rem';
+                slot1.style.backgroundColor = 'rgba(139, 69, 19, 0.6)';
+            }
+            
+            // Slot 2
+            if (gameState.ingredients.slot2) {
+                slot2.innerHTML = gameState.ingredients.slot2 === 'red' ? '🍄' : 
+                                 gameState.ingredients.slot2 === 'blue' ? '🍄' : '🍄';
+                slot2.style.fontSize = '2.2rem';
+                slot2.style.backgroundColor = gameState.ingredients.slot2 === 'red' ? 'rgba(255, 100, 100, 0.7)' :
+                                             gameState.ingredients.slot2 === 'blue' ? 'rgba(100, 100, 255, 0.7)' : 
+                                             'rgba(180, 100, 255, 0.7)';
+            } else {
+                slot2.innerHTML = '+';
+                slot2.style.fontSize = '1.8rem';
+                slot2.style.backgroundColor = 'rgba(139, 69, 19, 0.6)';
+            }
+            
+            // Activar o desactivar botón de mezcla
+            if (gameState.alchemistFrog) {
+                // Si tienes la rana, el botón solo se desactiva si no hay ingredientes
+                mixButton.disabled = !(gameState.ingredients.slot1 && gameState.ingredients.slot2);
+            } else {
+                mixButton.disabled = !(gameState.ingredients.slot1 && gameState.ingredients.slot2) || gameState.isPreparing;
+            }
+            
+            // Actualizar la cola visual
+            updateQueueList();
+        }
+        // Mostrar cola visual si la rana está activa y hay más de una receta en cola
+        function updateQueueList() {
+            const queueList = document.getElementById('cauldronQueueList');
+            if (gameState.alchemistFrog && gameState.cauldronQueue.length > 1) {
+                let html = '<div style="background:rgba(0,0,0,0.3);border-radius:10px;padding:8px 12px;"><b>Cola de recetas:</b><ul style="margin:8px 0 0 0;padding:0;list-style:none;">';
+                gameState.cauldronQueue.forEach((receta, idx) => {
+                    const combo = combinations[receta.slot1 + '-' + receta.slot2];
+                    html += `<li style='margin-bottom:4px;'>${combo ? combo.emoji : '🍄'} <span>${combo ? combo.name : receta.slot1 + ' + ' + receta.slot2}</span></li>`;
+                });
+                html += '</ul></div>';
+                queueList.innerHTML = html;
+            } else {
+                queueList.innerHTML = '';
+            }
+        }
+        
+        // Actualizar la interfaz de la tienda
+        function updateShopUI() {
+            // Regadera
+            wateringLevelEl.textContent = gameState.upgrades.wateringCan;
+            buyWateringBtn.disabled = gameState.upgrades.wateringCan >= 3;
+            buyWateringBtn.textContent = gameState.upgrades.wateringCan >= 3 ? 'Máximo nivel' : 'Mejorar';
+            if (gameState.upgrades.wateringCan >= 3) {
+                wateringPriceEl.textContent = 'MAX';
+            } else {
+                const price = upgradePrices.wateringCan[gameState.upgrades.wateringCan];
+                wateringPriceEl.textContent = `${price.iron ? price.iron + ' hierro' : ''}`;
+            }
+            // Fertilizante
+            fertilizerLevelEl.textContent = gameState.upgrades.fertilizer;
+            buyFertilizerBtn.disabled = gameState.upgrades.fertilizer >= 3;
+            buyFertilizerBtn.textContent = gameState.upgrades.fertilizer >= 3 ? 'Máximo nivel' : 'Mejorar';
+            if (gameState.upgrades.fertilizer >= 3) {
+                fertilizerPriceEl.textContent = 'MAX';
+            } else {
+                const price = upgradePrices.fertilizer[gameState.upgrades.fertilizer];
+                let txt = [];
+                if (price.combustible) txt.push(price.combustible + ' combustible');
+                if (price.amethyst) txt.push(price.amethyst + ' amatista');
+                fertilizerPriceEl.textContent = txt.join(', ');
+            }
+            // Gato jardinero
+            catLevelEl.textContent = gameState.upgrades.cat;
+            buyCatBtn.disabled = gameState.upgrades.cat >= 3;
+            buyCatBtn.textContent = gameState.upgrades.cat >= 3 ? 'Máximo nivel' : 'Mejorar';
+            if (gameState.upgrades.cat >= 3) {
+                catPriceEl.textContent = 'MAX';
+            } else {
+                const price = upgradePrices.cat[gameState.upgrades.cat];
+                let txt = [];
+                if (price.copper) txt.push(price.copper + ' cobre');
+                if (price.iron) txt.push(price.iron + ' hierro');
+                if (price.amethyst) txt.push(price.amethyst + ' amatista');
+                catPriceEl.textContent = txt.join(', ');
+            }
+            // Rana Alquimista
+            buyFrogBtn.disabled = gameState.alchemistFrog;
+            buyFrogBtn.textContent = gameState.alchemistFrog ? 'Ya tienes esta mejora' : 'Mejorar';
+            if (gameState.alchemistFrog) {
+                frogPriceEl.textContent = 'MAX';
+            } else {
+                const price = upgradePrices.frog[gameState.upgrades.frog || 0];
+                let txt = [];
+                if (price.bioconcreto) txt.push(price.bioconcreto + ' bioconcreto');
+                if (price.copper) txt.push(price.copper + ' cobre');
+                if (price.amethyst) txt.push(price.amethyst + ' amatista');
+                frogPriceEl.textContent = txt.join(', ');
+            }
+        }
+        
+        // Configurar event listeners
+        function setupEventListeners() {
+            // Macetas
+            document.querySelectorAll('.pot').forEach(pot => {
+                pot.addEventListener('click', () => handlePotClick(pot.id));
+            });
+            
+            // Semillas
+            document.querySelectorAll('.seed').forEach(seed => {
+                seed.addEventListener('click', () => handleSeedSelect(seed.dataset.type));
+            });
+            
+            // Tabs
+            gardenTab.addEventListener('click', () => switchTab('garden'));
+            cauldronTab.addEventListener('click', () => switchTab('cauldron'));
+            shopTab.addEventListener('click', () => switchTab('shop'));
+            
+            // Slots del caldero
+            slot1.addEventListener('click', () => openInventorySelector(1));
+            slot2.addEventListener('click', () => openInventorySelector(2));
+            
+            // Botón de mezcla
+            mixButton.addEventListener('click', mixIngredients);
+            
+            // Botón de vender eliminado
+            
+            // Selector de inventario
+            document.querySelectorAll('.inventory-option').forEach(option => {
+                option.addEventListener('click', () => selectIngredient(option.dataset.type));
+            });
+            
+            // Cerrar selector
+            document.getElementById('closeSelector').addEventListener('click', () => {
+                inventorySelector.style.display = 'none';
+            });
+            
+            // Botones de compra
+            buyWateringBtn.addEventListener('click', () => buyUpgrade('wateringCan'));
+            buyFertilizerBtn.addEventListener('click', () => buyUpgrade('fertilizer'));
+            buyCatBtn.addEventListener('click', () => buyUpgrade('cat'));
+            buyFrogBtn.addEventListener('click', () => {
+                buyUpgrade('frog');
+            });
+        }
+        
+        // Cambiar entre pestañas
+        function switchTab(tab) {
+            gardenTab.classList.remove('active');
+            cauldronTab.classList.remove('active');
+            shopTab.classList.remove('active');
+            
+            gardenContent.style.display = 'none';
+            cauldronContent.style.display = 'none';
+            shopContent.style.display = 'none';
+            
+            if (tab === 'garden') {
+                gardenTab.classList.add('active');
+                gardenContent.style.display = 'block';
+            } else if (tab === 'cauldron') {
+                cauldronTab.classList.add('active');
+                cauldronContent.style.display = 'block';
+            } else if (tab === 'shop') {
+                shopTab.classList.add('active');
+                shopContent.style.display = 'block';
+            }
+        }
+        
+        // Manejar clic en maceta
+        function handlePotClick(potId) {
+            const mushroom = gameState.garden[potId];
+            
+            if (!mushroom) {
+                // Maceta vacía - mostrar selector de semillas
+                gameState.selectedPot = potId;
+                seedSelector.style.display = 'block';
+                showMessage("Selecciona un tipo de seta para plantar");
+            } else if (mushroom.phase === 5) {
+                // Cosechar seta normal
+                harvestMushroom(potId, mushroom);
+            } else if (mushroom.phase === 6) {
+                // Cosechar seta especial con esporas
+                harvestSpecialMushroom(potId, mushroom);
+            } else {
+                // Usar regadera si está disponible
+                if (gameState.upgrades.wateringCan > 0 && gameState.wateringUses < gameState.upgrades.wateringCan) {
+                    useWateringCan(potId, mushroom);
+                } else {
+                    showMessage(`La seta está creciendo (Fase ${mushroom.phase}/6)`);
+                }
+            }
+        }
+        
+        // Usar la regadera en una seta
+        function useWateringCan(potId, mushroom) {
+            if (mushroom.phase < 6) {
+                mushroom.phase++;
+                mushroom.growthProgress = 0;
+                
+                // Aumentar tamaño
+                if (mushroom.phase <= 5) {
+                    mushroom.height += 15;
+                    mushroom.capSize += 5;
+                }
+                
+                // Mostrar efecto visual
+                const pot = document.getElementById(potId);
+                const wateringEffect = document.createElement('div');
+                wateringEffect.className = 'watering-can';
+                wateringEffect.textContent = '🚿';
+                wateringEffect.style.left = `${Math.random() * 70 + 15}%`;
+                pot.appendChild(wateringEffect);
+                
+                // Eliminar después de la animación
+                setTimeout(() => {
+                    if (wateringEffect.parentNode) {
+                        wateringEffect.parentNode.removeChild(wateringEffect);
+                    }
+                }, 1000);
+                
+                gameState.wateringUses++;
+                showMessage(`¡Has usado la regadera en una seta! (Usos restantes: ${gameState.upgrades.wateringCan - gameState.wateringUses})`);
+                
+                // Actualizar UI
+                updateUI();
+                
+                // Mostrar mensaje si alcanza fase 6
+                if (mushroom.phase === 6) {
+                    showMessage(`¡La seta ha alcanzado la fase 6 y producirá esporas especiales!`);
+                    createSporeEffect(potId);
+                }
+            } else {
+                showMessage("¡Esta seta ya está completamente crecida!");
+            }
+        }
+        
+        // Comprar mejora en la tienda
+        function buyUpgrade(type) {
+            let level = gameState.upgrades[type];
+            if (type === 'frog' && gameState.alchemistFrog) return;
+            if (level >= 3) return;
+            const price = upgradePrices[type][level];
+            // Verificar recursos
+            let canBuy = true;
+            if (price.iron && gameState.craftedItems.iron < price.iron) canBuy = false;
+            if (price.combustible && gameState.craftedItems.combustible < price.combustible) canBuy = false;
+            if (price.amethyst && gameState.craftedItems.amethyst < price.amethyst) canBuy = false;
+            if (price.copper && gameState.craftedItems.copper < price.copper) canBuy = false;
+            if (price.bioconcreto && gameState.craftedItems.bioconcreto < price.bioconcreto) canBuy = false;
+            if (!canBuy) {
+                showMessage('No tienes suficientes recursos para comprar esta mejora');
+                return;
+            }
+            // Descontar recursos
+            if (price.iron) gameState.craftedItems.iron -= price.iron;
+            if (price.combustible) gameState.craftedItems.combustible -= price.combustible;
+            if (price.amethyst) gameState.craftedItems.amethyst -= price.amethyst;
+            if (price.copper) gameState.craftedItems.copper -= price.copper;
+            if (price.bioconcreto) gameState.craftedItems.bioconcreto -= price.bioconcreto;
+            // Aplicar mejora
+            if (type === 'frog') {
+                gameState.alchemistFrog = true;
+            } else {
+                gameState.upgrades[type]++;
+            }
+            updateUI();
+            showMessage('¡Mejora comprada!');
+        }
+        
+        // Iniciar el gato jardinero
+        function startCatAssistant() {
+            if (gameState.catInterval) {
+                clearInterval(gameState.catInterval);
+            }
+            
+            if (gameState.upgrades.cat > 0) {
+                const intervals = [30000, 20000, 8000]; // 30s, 20s, 8s
+                const intervalTime = intervals[gameState.upgrades.cat - 1];
+                
+                gameState.catInterval = setInterval(() => {
+                    catAction();
+                }, intervalTime);
+            }
+        }
+        
+        // Acción del gato jardinero
+        function catAction() {
+            const emptyPots = Object.keys(gameState.garden).filter(potId => !gameState.garden[potId]);
+            const readyPots = Object.keys(gameState.garden).filter(potId => {
+                const mushroom = gameState.garden[potId];
+                return mushroom && (mushroom.phase === 5 || mushroom.phase === 6);
+            });
+            
+            // Si hay setas listas para cosechar, cosechar una
+            if (readyPots.length > 0) {
+                const randomPotId = readyPots[Math.floor(Math.random() * readyPots.length)];
+                const mushroom = gameState.garden[randomPotId];
+                
+                if (mushroom.phase === 5) {
+                    harvestMushroom(randomPotId, mushroom);
+                } else {
+                    harvestSpecialMushroom(randomPotId, mushroom);
+                }
+                
+                showMessage("🐱 ¡El gato jardinero ha cosechado una seta por ti!");
+                
+                // Efecto visual del gato
+                const gardenSection = document.querySelector('.garden-section');
+                const cat = document.createElement('div');
+                cat.className = 'cat-garden';
+                cat.textContent = '🐱';
+                cat.style.top = '20px';
+                gardenSection.appendChild(cat);
+                
+                setTimeout(() => {
+                    if (cat.parentNode) {
+                        cat.parentNode.removeChild(cat);
+                    }
+                }, 10000);
+            } 
+            // Si hay macetas vacías, plantar una seta aleatoria
+            else if (emptyPots.length > 0) {
+                const randomPotId = emptyPots[Math.floor(Math.random() * emptyPots.length)];
+                const types = ['red', 'blue', 'purple'];
+                const randomType = types[Math.floor(Math.random() * types.length)];
+                
+                // Crear seta
+                const colors = {
+                    red: { stem: "#f5c0c0", cap: "#ff6b6b" },
+                    blue: { stem: "#a0d2f5", cap: "#4d96ff" },
+                    purple: { stem: "#d9b8ff", cap: "#9c51ff" }
+                };
+                
+                const mushroom = {
+                    type: randomType,
+                    phase: 1,
+                    height: 20,
+                    capSize: 20,
+                    stemColor: colors[randomType].stem,
+                    capColor: colors[randomType].cap,
+                    growthProgress: 0
+                };
+                
+                // Plantar en la maceta
+                gameState.garden[randomPotId] = mushroom;
+                
+                // Iniciar crecimiento
+                startGrowth(randomPotId);
+                
+                showMessage(`🐱 ¡El gato jardinero ha plantado una seta ${randomType === 'red' ? 'roja' : randomType === 'blue' ? 'azul' : 'púrpura'} por ti!`);
+                
+                // Efecto visual del gato
+                const gardenSection = document.querySelector('.garden-section');
+                const cat = document.createElement('div');
+                cat.className = 'cat-garden';
+                cat.textContent = '🐱';
+                cat.style.top = '20px';
+                gardenSection.appendChild(cat);
+                
+                setTimeout(() => {
+                    if (cat.parentNode) {
+                        cat.parentNode.removeChild(cat);
+                    }
+                }, 10000);
+            }
+            
+            updateUI();
+        }
+        
+        // Manejar selección de semilla
+        function handleSeedSelect(type) {
+            // Crear seta
+            const colors = {
+                red: { stem: "#f5c0c0", cap: "#ff6b6b" },
+                blue: { stem: "#a0d2f5", cap: "#4d96ff" },
+                purple: { stem: "#d9b8ff", cap: "#9c51ff" }
+            };
+            
+            const mushroom = {
+                type: type,
+                phase: 1,
+                height: 20,
+                capSize: 20,
+                stemColor: colors[type].stem,
+                capColor: colors[type].cap,
+                growthProgress: 0
+            };
+            
+            // Plantar en la maceta seleccionada
+            gameState.garden[gameState.selectedPot] = mushroom;
+            
+            // Ocultar selector
+            seedSelector.style.display = 'none';
+            
+            // Iniciar crecimiento
+            startGrowth(gameState.selectedPot);
+            
+            // Actualizar UI
+            updateUI();
+            showMessage(`¡Has plantado una seta ${type === 'red' ? 'roja' : type === 'blue' ? 'azul' : 'púrpura'}!`);
+        }
+        
+        // Iniciar crecimiento de la seta con fertilizante
+        function startGrowth(potId) {
+            // Detener cualquier intervalo existente para esta maceta
+            if (gameState.growthIntervals[potId]) {
+                clearInterval(gameState.growthIntervals[potId]);
+            }
+            
+            const mushroom = gameState.garden[potId];
+            
+            // Obtener velocidad de crecimiento según el tipo y fertilizante
+            let baseInterval = growthSpeeds[mushroom.type];
+            
+            // Aplicar efecto de fertilizante
+            const fertilizerBonus = [0, 0.1, 0.15, 0.2][gameState.upgrades.fertilizer];
+            const intervalTime = baseInterval * (1 - fertilizerBonus);
+            
+            // Crear intervalo de crecimiento
+            gameState.growthIntervals[potId] = setInterval(() => {
+                if (!mushroom) return;
+                
+                // Incrementar progreso de crecimiento
+                mushroom.growthProgress += 5;
+                
+                // Avanzar a la siguiente fase si es necesario
+                if (mushroom.growthProgress >= 100) {
+                    mushroom.phase++;
+                    mushroom.growthProgress = 0;
+                    
+                    // Aumentar tamaño hasta la fase 5
+                    if (mushroom.phase <= 5) {
+                        mushroom.height += 15;
+                        mushroom.capSize += 5;
+                    }
+                    
+                    // Mostrar mensaje al alcanzar fase 6
+                    if (mushroom.phase === 6) {
+                        showMessage(`¡Una seta ha alcanzado la fase 6 y producirá esporas especiales!`);
+                        
+                        // Crear efecto de esporas al alcanzar fase 6
+                        createSporeEffect(potId);
+                        
+                        // Detener crecimiento después de la fase 6
+                        clearInterval(gameState.growthIntervals[potId]);
+                        return;
+                    }
+                }
+                
+                // Actualizar UI
+                updateUI();
+            }, intervalTime);
+        }
+        
+        // Crear efecto de esporas al alcanzar fase 6
+        function createSporeEffect(potId) {
+            const pot = document.getElementById(potId);
+            const sporesCount = 10;
+            
+            for (let i = 0; i < sporesCount; i++) {
+                const spore = document.createElement('div');
+                spore.className = 'spores';
+                spore.textContent = '✨';
+                spore.style.left = `${Math.random() * 80 + 10}%`;
+                spore.style.bottom = `${Math.random() * 30 + 30}%`;
+                pot.appendChild(spore);
+                
+                // Eliminar después de la animación
+                setTimeout(() => {
+                    if (spore.parentNode) {
+                        spore.parentNode.removeChild(spore);
+                    }
+                }, 3000);
+            }
+        }
+        
+        // Cosechar seta normal
+        function harvestMushroom(potId, mushroom) {
+            // Añadir al inventario
+            gameState.inventory[mushroom.type]++;
+            
+            // Limpiar maceta
+            gameState.garden[potId] = null;
+            clearInterval(gameState.growthIntervals[potId]);
+            
+            // Actualizar UI
+            updateUI();
+            showMessage(`¡Has cosechado una seta ${mushroom.type === 'red' ? 'roja' : mushroom.type === 'blue' ? 'azul' : 'púrpura'}!`);
+        }
+        
+        // Cosechar seta especial (fase 6)
+        function harvestSpecialMushroom(potId, mushroom) {
+            // Añadir seta al inventario
+            gameState.inventory[mushroom.type]++;
+            
+            // Generar esporas
+            const sporesCount = 3 + Math.floor(Math.random() * 3);
+            gameState.spores += sporesCount;
+            
+            // Limpiar maceta
+            gameState.garden[potId] = null;
+            clearInterval(gameState.growthIntervals[potId]);
+            
+            // Efecto visual de esporas
+            createSporeEffect(potId);
+            
+            // Actualizar UI
+            updateUI();
+            showMessage(`¡Has cosechado una seta especial y obtenido ${sporesCount} esporas!`);
+        }
+        
+        // Abrir selector de inventario para el caldero
+        function openInventorySelector(slot) {
+            // Si tienes la rana alquimista, permite añadir a la cola aunque esté ocupado
+            if (gameState.isPreparing && !gameState.alchemistFrog) {
+                showMessage("¡El caldero está ocupado procesando recursos!");
+                return;
+            }
+            
+            gameState.currentSlot = slot;
+            
+            // Verificar si tiene setas en el inventario
+            if (gameState.inventory.red === 0 && gameState.inventory.blue === 0 && gameState.inventory.purple === 0) {
+                showMessage("¡No tienes setas en tu inventario!");
+                return;
+            }
+            
+            inventorySelector.style.display = 'block';
+        }
+        
+        // Seleccionar ingrediente para el caldero
+        function selectIngredient(type) {
+            if (gameState.inventory[type] > 0) {
+                // Asignar al slot actual
+                if (gameState.currentSlot === 1) {
+                    gameState.ingredients.slot1 = type;
+                } else {
+                    gameState.ingredients.slot2 = type;
+                }
+                
+                // Reducir inventario
+                gameState.inventory[type]--;
+                
+                // Actualizar UI
+                updateUI();
+                
+                // Cerrar selector
+                inventorySelector.style.display = 'none';
+                
+                showMessage(`Has seleccionado una seta ${type === 'red' ? 'roja' : type === 'blue' ? 'azul' : 'púrpura'} para el caldero`);
+            } else {
+                showMessage(`¡No tienes setas ${type === 'red' ? 'rojas' : type === 'blue' ? 'azules' : 'púrpuras'}!`);
+            }
+        }
+        
+        // Mezclar ingredientes en el caldero
+        function mixIngredients() {
+            // Si la rana alquimista está activa, soporta cola de recetas
+            if (gameState.alchemistFrog && gameState.isPreparing) {
+                if (gameState.cauldronQueue.length < 5 && gameState.ingredients.slot1 && gameState.ingredients.slot2) {
+                    gameState.cauldronQueue.push({
+                        slot1: gameState.ingredients.slot1,
+                        slot2: gameState.ingredients.slot2
+                    });
+                    showMessage('Receta añadida a la cola del caldero.');
+                    gameState.ingredients.slot1 = null;
+                    gameState.ingredients.slot2 = null;
+                    updateCauldronSlots();
+                    // Actualizar la cola visual
+                    updateQueueList();
+                } else if (gameState.cauldronQueue.length >= 5) {
+                    showMessage('La cola del caldero está llena (máx 5 recetas).');
+                }
+                return;
+            }
+            if (gameState.isPreparing) return;
+            // Ordenar ingredientes para que el orden no afecte la combinación
+            const slots = [gameState.ingredients.slot1, gameState.ingredients.slot2].sort();
+            const key = `${slots[0]}-${slots[1]}`;
+            const combination = combinations[key];
+            if (combination) {
+                showMessage("¡Receta aceptada! Procesando recursos...");
+                // Deshabilitar el caldero durante la preparación
+                gameState.isPreparing = true;
+                mixButton.disabled = true;
+                // Siempre desbloquear los slots después de colocar ingredientes
+                slot1.style.pointerEvents = 'auto';
+                slot2.style.pointerEvents = 'auto';
+                // Mostrar temporizador
+                preparationTimer.style.display = 'block';
+                const prepTime = preparationTimes[combination.item];
+                let currentTime = prepTime;
+                timerValue.textContent = `${currentTime}s`;
+                // Actualizar barra de progreso
+                const timerInterval = setInterval(() => {
+                    currentTime--;
+                    timerValue.textContent = `${currentTime}s`;
+                    preparationProgress.style.width = `${100 - (currentTime / prepTime * 100)}%`;
+                    if (currentTime <= 0) {
+                        clearInterval(timerInterval);
+                        preparationTimer.style.display = 'none';
+                        // Añadir objeto creado
+                        gameState.craftedItems[combination.item]++;
+                        gameState.inventory.potion++;
+                        // Actualizar UI
+                        updateUI();
+                        // Mostrar resultado
+                        resultItem.textContent = combination.emoji;
+                        resultName.textContent = combination.name;
+                        craftingResult.style.display = 'block';
+                        // Efecto visual del caldero
+                        if (typeof animateCauldron === 'function') {
+                            animateCauldron(combination.item);
+                        }
+                        // Limpiar slots
+                        gameState.ingredients.slot1 = null;
+                        gameState.ingredients.slot2 = null;
+                        updateCauldronSlots();
+                        // Reactivar caldero
+                        gameState.isPreparing = false;
+                        slot1.style.pointerEvents = 'auto';
+                        slot2.style.pointerEvents = 'auto';
+                        showMessage(`¡Has creado ${combination.emoji} ${combination.name}!`);
+                        // Si la rana está activa y hay recetas en cola, inicia la siguiente automáticamente
+                        if (gameState.alchemistFrog && gameState.cauldronQueue.length > 0) {
+                            const next = gameState.cauldronQueue.shift();
+                            gameState.ingredients.slot1 = next.slot1;
+                            gameState.ingredients.slot2 = next.slot2;
+                            updateCauldronSlots();
+                            // Actualizar la cola visual
+                            updateQueueList();
+                            setTimeout(() => {
+                                mixIngredients();
+                            }, 1200);
+                        }
+                        // Ocultar resultado después de un tiempo
+                        setTimeout(() => {
+                            craftingResult.style.display = 'none';
+                        }, 3000);
+                    }
+                }, 1000);
+            } else {
+                showMessage("¡Esos ingredientes no se pueden combinar!");
+            }
+        }
+        
+        // Vender al cliente del día
+        // Función de venta eliminada
+        
+        // Crear burbujas adicionales
+        function createExtraBubbles(count) {
+            const cauldronBubbles = document.getElementById('cauldronBubbles');
+            
+            for (let i = 0; i < count; i++) {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                
+                // Tamaño aleatorio
+                const size = Math.random() * 12 + 4;
+                bubble.style.width = `${size}px`;
+                bubble.style.height = `${size}px`;
+                
+                // Posición aleatoria
+                bubble.style.left = `${Math.random() * 100}%`;
+                bubble.style.bottom = `${Math.random() * 20}%`;
+                
+                // Tiempo de animación aleatorio
+                bubble.style.animationDuration = `${Math.random() * 2 + 2}s`;
+                
+                cauldronBubbles.appendChild(bubble);
+                
+                // Eliminar burbuja después de la animación
+                setTimeout(() => {
+                    if (bubble.parentNode) {
+                        bubble.parentNode.removeChild(bubble);
+                    }
+                }, 5000);
+            }
+        }
+        
+        // Mostrar mensaje en la interfaz
+        function showMessage(message) {
+            messageBox.textContent = message;
+            messageBox.style.display = 'block';
+            
+            setTimeout(() => {
+                messageBox.style.display = 'none';
+            }, 3000);
+        }
+        
+        // Ciclo de día/noche
+        function startDayCycle() {
+            setInterval(() => {
+                gameState.day++;
+                gameState.wateringUses = 0; // Resetear usos de regadera
+                
+                // Generar nuevo cliente cada día
+                // Cliente eliminado
+                
+                // Ejecutar regadera nivel 3 automáticamente
+                if (gameState.upgrades.wateringCan >= 3) {
+                    autoWaterPlants();
+                }
+                
+                // Actualizar UI
+                updateUI();
+                showMessage(`¡Ha comenzado un nuevo día!`);
+                
+                // Animación de deslizamiento para el cliente
+                const customerContainer = document.querySelector('.daily-customer-container');
+                customerContainer.style.overflow = 'hidden';
+                const customer = document.getElementById('dailyCustomer');
+                customer.style.transform = 'translateY(-200px)';
+                
+                setTimeout(() => {
+                    customer.style.transition = 'transform 0.5s ease';
+                    customer.style.transform = 'translateY(0)';
+                }, 100);
+                
+                // Pequeña posibilidad de obtener esporas gratis
+                if (Math.random() > 0.7) {
+                    const freeSpores = 1 + Math.floor(Math.random() * 3);
+                    gameState.spores += freeSpores;
+                    showMessage(`¡Has encontrado ${freeSpores} esporas durante la noche!`);
+                    updateUI();
+                }
+            }, 60000); // 1 minuto = 1 día
+        }
+        
+        // Regar plantas automáticamente (nivel 3 de regadera)
+        function autoWaterPlants() {
+            const pots = Object.keys(gameState.garden);
+            let watered = 0;
+            
+            for (const potId of pots) {
+                if (watered >= 2) break; // Solo 2 plantas por día
+                
+                const mushroom = gameState.garden[potId];
+                if (mushroom && mushroom.phase < 6) {
+                    mushroom.phase++;
+                    
+                    // Aumentar tamaño
+                    if (mushroom.phase <= 5) {
+                        mushroom.height += 15;
+                        mushroom.capSize += 5;
+                    }
+                    
+                    watered++;
+                    
+                    // Efecto visual
+                    const pot = document.getElementById(potId);
+                    const wateringEffect = document.createElement('div');
+                    wateringEffect.className = 'watering-can';
+                    wateringEffect.textContent = '🚿';
+                    wateringEffect.style.left = `${Math.random() * 70 + 15}%`;
+                    pot.appendChild(wateringEffect);
+                    
+                    setTimeout(() => {
+                        if (wateringEffect.parentNode) {
+                            wateringEffect.parentNode.removeChild(wateringEffect);
+                        }
+                    }, 1000);
+                    
+                    // Mostrar mensaje si alcanza fase 6
+                    if (mushroom.phase === 6) {
+                        showMessage(`¡La seta en ${potId} ha alcanzado la fase 6!`);
+                        createSporeEffect(potId);
+                    }
+                }
+            }
+            
+            if (watered > 0) {
+                showMessage(`¡La regadera automática ha acelerado ${watered} setas!`);
+                updateUI();
+            }
+        }
+        
+        // --- Menú debug discreto ---
+        let debugUnlocked = false;
+        const debugMenu = document.getElementById('debugMenu');
+        if (debugMenu) {
+            debugMenu.innerHTML = `<span style='opacity:0.7;'>Debug</span>`;
+            debugMenu.addEventListener('click', () => {
+                if (!debugUnlocked) {
+                    const pwd = prompt('Introduce la contraseña de debug:');
+                    if (pwd === 'irelia') {
+                        debugUnlocked = true;
+                        showDebugMenu();
+                    }
+                }
+            });
+        }
+        function showDebugMenu() {
+            debugMenu.style.opacity = '1';
+            debugMenu.innerHTML = `
+                <b>Debug</b><br>
+                <button onclick='window.stopDayCycle()'>Detener Día</button>
+                <button onclick='window.instantBrewing()'>Instant Brewing</button><br>
+                <button onclick='window.upgradeWatering()'>Regadera +</button>
+                <button onclick='window.upgradeFertilizer()'>Fertilizante +</button>
+                <button onclick='window.upgradeCat()'>Gato +</button><br>
+                <button onclick='window.addSpores()'>+10 Esporas</button><br>
+                <div style='margin-top:8px;'>
+                  <label for='debugItemSelect'>Objeto:</label>
+                  <select id='debugItemSelect'>
+                    <option value='red'>Seta Roja</option>
+                    <option value='blue'>Seta Azul</option>
+                    <option value='purple'>Seta Púrpura</option>
+                    <option value='combustible'>Combustible</option>
+                    <option value='bioconcreto'>Bioconcreto</option>
+                    <option value='iron'>Hierro</option>
+                    <option value='copper'>Cobre</option>
+                    <option value='amethyst'>Amatista</option>
+                  </select>
+                  <label for='debugItemQty'>Cantidad:</label>
+                  <input type='number' id='debugItemQty' value='1' min='1' style='width:50px;'>
+                  <button onclick='window.addDebugItem()'>Añadir</button>
+                </div>
+            `;
+            // Añadir handler para el botón de añadir objeto
+            window.addDebugItem = function() {
+                const item = document.getElementById('debugItemSelect').value;
+                const qty = parseInt(document.getElementById('debugItemQty').value) || 1;
+                // Añadir al inventario o craftedItems según el tipo
+                if (['red','blue','purple'].includes(item)) {
+                    gameState.inventory[item] += qty;
+                } else {
+                    gameState.craftedItems[item] += qty;
+                }
+                updateUI();
+                showMessage(`Añadido ${qty} ${item} al inventario`);
+            };
+        }
+        window.stopDayCycle = function() {
+            if (window.dayCycleInterval) clearInterval(window.dayCycleInterval);
+            showMessage('Ciclo de día detenido');
+        };
+        window.instantBrewing = function() {
+            preparationTimes.red = 1;
+            preparationTimes.blue = 1;
+            preparationTimes.purple = 1;
+            preparationTimes.rainbow = 1;
+            preparationTimes.ether = 1;
+            showMessage('Instant brewing activado');
+        };
+        window.upgradeWatering = function() {
+            gameState.upgrades.wateringCan = Math.min(gameState.upgrades.wateringCan + 1, 3);
+            updateUI();
+            showMessage('Regadera mejorada');
+        };
+        window.upgradeFertilizer = function() {
+            gameState.upgrades.fertilizer = Math.min(gameState.upgrades.fertilizer + 1, 3);
+            updateUI();
+            showMessage('Fertilizante mejorado');
+        };
+        window.upgradeCat = function() {
+            gameState.upgrades.cat = Math.min(gameState.upgrades.cat + 1, 3);
+            startCatAssistant();
+            updateUI();
+            showMessage('Gato mejorado');
+        };
+        window.addSpores = function() {
+            gameState.spores += 10;
+            updateUI();
+            showMessage('Esporas añadidas');
+        };
+        
+        // Iniciar el juego cuando se carga la página
+        window.onload = initGame;
+    </script>
+</body>
+</html>
